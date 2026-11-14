@@ -50,9 +50,18 @@ jobs:
       - name: Prebuild (android folder)
         run: npx expo prebuild -p android --no-install
 
-      # hamesha ek hi signature — warna update install nahi hota
+      # hamesha ek hi signature — warna update install nahi hota.
+      # Key repo me NAHI hai: Settings → Secrets and variables → Actions →
+      # KSPMS_KEYSTORE_B64 (backup: Documents\KunwarShree-App-Key-BACKUP)
       - name: Signing key
-        run: cp signing/debug.keystore android/app/debug.keystore
+        env:
+          KS: ${{ secrets.KSPMS_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KS" ]; then
+            echo "::error::GitHub Secret KSPMS_KEYSTORE_B64 nahi mila — Settings → Secrets → Actions me daalein"
+            exit 1
+          fi
+          echo "$KS" | base64 -d > android/app/debug.keystore
 
       - name: Build APK
         working-directory: android

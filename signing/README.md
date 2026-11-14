@@ -1,8 +1,8 @@
 # App ki signature key — ise kabhi delete mat karna
 
-`debug.keystore` se har APK sign hota hai. Phone sirf usi signature wala
-update maanta hai. Key kho gayi to sab phones se app hata kar dobara
-install karni padegi (data server par hai, wo surakshit rehta hai).
+Key repo me NAHI rakhi jati. GitHub par: Settings → Secrets and variables →
+Actions → secret `KSPMS_KEYSTORE_B64` (keystore ka base64).
 
-Backup: `Documents\KunwarShree-App-Key-BACKUP\kspms-signing.keystore`
-(alias: androiddebugkey). Ye repo PRIVATE hi rakhna.
+Backup is computer par: `Documents\KunwarShree-App-Key-BACKUP\kspms-signing.keystore`
+(alias: androiddebugkey). Phone sirf usi signature wala update maanta hai —
+key kho gayi to sab phones se app hata kar dobara install karni padegi.

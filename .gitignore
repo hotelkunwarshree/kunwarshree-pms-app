@@ -40,3 +40,7 @@ yarn-error.*
 /ios
 /android
 dist/
+
+# signing key repo me nahi — GitHub Secret me hai
+signing/*.keystore
+*.keystore
