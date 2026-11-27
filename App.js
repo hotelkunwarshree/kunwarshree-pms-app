@@ -9,8 +9,8 @@ import * as Sharing from 'expo-sharing'
 import { File, Paths } from 'expo-file-system'
 import { useKeepAwake } from 'expo-keep-awake'
 import { AUTH_REDIRECT, AUTH_STORAGE_KEY, INSIDE_HOSTS, START_URL, SUPABASE_ANON_KEY, SUPABASE_URL } from './src/config'
-import { BRIDGE_JS, RAWBT_OK_JS, loginJS, capsJS, lanDoneJS } from './src/bridge'
-import { lanAvailable, sendToPrinter } from './modules/ks-printer'
+import { BRIDGE_JS, RAWBT_OK_JS, loginJS, capsJS, lanDoneJS, btListJS } from './src/bridge'
+import { lanAvailable, btAvailable, sendToPrinter, sendToBtPrinter, btList } from './modules/ks-printer'
 import { escposJob } from './src/escpos'
 
 const MAROON = '#5c0e17'
@@ -172,6 +172,17 @@ function Shell() {
         .then(() => sendToPrinter(m.host, m.port, escposJob(m.text, m.copies)))
         .then(() => reply(true, ''))
         .catch((err) => reply(false, String(err?.message || err)))
+    } else if (m.type === 'btprint') {
+      /* 🔵 Bluetooth printer — usi line me (do parchi ek saath na judein) */
+      const reply = (ok, msg) => web.current?.injectJavaScript(lanDoneJS(m.id, ok, msg))
+      lanQueue.current = lanQueue.current
+        .then(() => sendToBtPrinter(m.address, escposJob(m.text, m.copies)))
+        .then(() => reply(true, ''))
+        .catch((err) => reply(false, `${err?.code || 'ERR'}|${err?.message || err}`))
+    } else if (m.type === 'btlist') {
+      btList()
+        .then((list) => web.current?.injectJavaScript(btListJS(m.id, true, list)))
+        .catch((err) => web.current?.injectJavaScript(btListJS(m.id, false, `${err?.code || 'ERR'}|${err?.message || err}`)))
     }
   }, [])
 
@@ -185,7 +196,7 @@ function Shell() {
         source={{ uri: START_URL }}
         style={{ flex: 1 }}
         originWhitelist={['*']}
-        injectedJavaScriptBeforeContentLoaded={BRIDGE_JS + capsJS({ lan: lanAvailable })}
+        injectedJavaScriptBeforeContentLoaded={BRIDGE_JS + capsJS({ lan: lanAvailable, bt: btAvailable })}
         injectedJavaScriptBeforeContentLoadedForMainFrameOnly
         onShouldStartLoadWithRequest={onShouldStart}
         onOpenWindow={onOpenWindow}

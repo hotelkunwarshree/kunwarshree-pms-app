@@ -106,3 +106,9 @@ export const lanDoneJS = (id, ok, msg) => `
 try { window.__ksLanDone && window.__ksLanDone(${JSON.stringify(String(id || ''))}, ${ok ? 'true' : 'false'}, ${JSON.stringify(String(msg || ''))}); } catch (e) {}
 true;
 `
+
+/* 🔵 paired Bluetooth printers ki list website ko */
+export const btListJS = (id, ok, data) => `
+try { window.__ksBtList && window.__ksBtList(${JSON.stringify(String(id || ''))}, ${ok ? 'true' : 'false'}, ${JSON.stringify(data ?? null)}); } catch (e) {}
+true;
+`

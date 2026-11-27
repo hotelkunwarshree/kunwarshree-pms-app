@@ -1,3 +1,7 @@
-<manifest>
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- 🔵 Bluetooth printer: Android 12+ par "Nearby devices" permission -->
+  <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+  <!-- purane Android (11 tak) ke liye -->
+  <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+  <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
 </manifest>
