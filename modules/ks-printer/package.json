@@ -1,0 +1,7 @@
+{
+  "name": "ks-printer",
+  "version": "1.0.0",
+  "description": "Kunwar Shree PMS — KOT/bill seedha Wi-Fi/LAN thermal printer par (ESC/POS, port 9100)",
+  "main": "index.js",
+  "private": true
+}

@@ -93,3 +93,16 @@ true;
 
 /* RawBT khul gaya → website ko batao (warna wo "RawBT nahi mila" dikhati hai) */
 export const RAWBT_OK_JS = `try { window.dispatchEvent(new Event('blur')); } catch (e) {} true;`
+
+/* app kya-kya kar sakti hai — website isse dekh kar option dikhati hai
+   (purani app me ye nahi hota, to website "app update karein" kehti hai) */
+export const capsJS = (caps) => `
+try { window.__ksAppCaps = ${JSON.stringify({ v: 2, ...caps })}; } catch (e) {}
+true;
+`
+
+/* 📡 Wi-Fi printer ka jawab website ko */
+export const lanDoneJS = (id, ok, msg) => `
+try { window.__ksLanDone && window.__ksLanDone(${JSON.stringify(String(id || ''))}, ${ok ? 'true' : 'false'}, ${JSON.stringify(String(msg || ''))}); } catch (e) {}
+true;
+`

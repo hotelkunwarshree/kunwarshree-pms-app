@@ -9,7 +9,9 @@ import * as Sharing from 'expo-sharing'
 import { File, Paths } from 'expo-file-system'
 import { useKeepAwake } from 'expo-keep-awake'
 import { AUTH_REDIRECT, AUTH_STORAGE_KEY, INSIDE_HOSTS, START_URL, SUPABASE_ANON_KEY, SUPABASE_URL } from './src/config'
-import { BRIDGE_JS, RAWBT_OK_JS, loginJS } from './src/bridge'
+import { BRIDGE_JS, RAWBT_OK_JS, loginJS, capsJS, lanDoneJS } from './src/bridge'
+import { lanAvailable, sendToPrinter } from './modules/ks-printer'
+import { escposJob } from './src/escpos'
 
 const MAROON = '#5c0e17'
 const GOLD = '#cfae5b'
@@ -95,6 +97,7 @@ function Shell() {
   const web = useRef(null)
   const canBack = useRef(false)
   const printing = useRef(Promise.resolve())
+  const lanQueue = useRef(Promise.resolve())
   const [offline, setOffline] = useState(false)
   const [busy, setBusy] = useState(false)
   const [key, setKey] = useState(0)
@@ -162,6 +165,13 @@ function Shell() {
         .catch((err) => toast('Print nahi hua: ' + (err?.message || err)))
     } else if (m.type === 'download') {
       saveFile(m).catch((err) => toast('File save nahi hui: ' + (err?.message || err)))
+    } else if (m.type === 'lanprint') {
+      /* 📡 Wi-Fi printer — ek ke baad ek (do KOT ek saath printer par na takrayein) */
+      const reply = (ok, msg) => web.current?.injectJavaScript(lanDoneJS(m.id, ok, msg))
+      lanQueue.current = lanQueue.current
+        .then(() => sendToPrinter(m.host, m.port, escposJob(m.text, m.copies)))
+        .then(() => reply(true, ''))
+        .catch((err) => reply(false, String(err?.message || err)))
     }
   }, [])
 
@@ -175,7 +185,7 @@ function Shell() {
         source={{ uri: START_URL }}
         style={{ flex: 1 }}
         originWhitelist={['*']}
-        injectedJavaScriptBeforeContentLoaded={BRIDGE_JS}
+        injectedJavaScriptBeforeContentLoaded={BRIDGE_JS + capsJS({ lan: lanAvailable })}
         injectedJavaScriptBeforeContentLoadedForMainFrameOnly
         onShouldStartLoadWithRequest={onShouldStart}
         onOpenWindow={onOpenWindow}
